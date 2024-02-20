@@ -25,8 +25,6 @@ const offsets = {
     MD: [47, 10],
     DC: [49, 21]
   };
-
-
   
 const Map = () => {
   const [state, setStates] = useState([]);
@@ -94,7 +92,7 @@ const Map = () => {
                   style={{
                     default: {
                       fill: JSON.parse(localStorage.getItem('user'))?.locations.includes(geo.properties.name) ? "#65A5B8" : "#F3EBE2", 
-                      stroke: "#F53"
+                      stroke: "green"
                     },
                     hover: { fill: "#0081B8", outline: "#505168"},
                     pressed: {fill: "#65A5B8", outline: "#65A5B8" }
