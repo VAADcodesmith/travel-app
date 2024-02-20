@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { geoCentroid } from 'd3-geo';
 import { useNavigate } from 'react-router-dom';
+import { Button } from "@chakra-ui/react";
 
 import {
     ComposableMap, //map container
@@ -69,7 +70,7 @@ const Map = () => {
           alignItems: "center",
           background: "cream"
       }}>
-      <button onClick={handleLogout}>Logout</button>
+      
       <h1>Let's track our travels!</h1>
 
       {/* component to render map */}
@@ -130,9 +131,11 @@ const Map = () => {
                 })}
                 </>
             )}
+            
           </Geographies>
         </ComposableMap>
       </div>
+      <Button borderRadius="9px" type="submit" variant="solid" marginBottom="15px" colorScheme="brand" onClick={handleLogout}>Logout</Button>
     </div>
   );
 };
