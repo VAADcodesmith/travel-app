@@ -11,10 +11,12 @@ import {
     Annotation, // method to create an annotation
 } from 'react-simple-maps';
 
-import allStates from "./allstates.json";
+import allStates from "../allstates.json";
 
 const geoURL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
+//offsets arrays are x-axis and y-axis situated
+//ex: 50 px to the right, 8 pixels down
 const offsets = { 
     VT: [50, -8],
     NH: [34, 2],
@@ -29,12 +31,17 @@ const offsets = {
   
 const Map = () => {
   const [state, setStates] = useState([]);
+  const [clickedGeo, setClickedGeo] = useState(null); // State to track clicked geography
   const navigate = useNavigate();
 
-  const handleStateClick = (stateName) => {
+  const handleStateClick = (stateName, e) => {
     // Retrieve user information from local storage
     const storedUser = JSON.parse(localStorage.getItem('user'));
   
+    if (e.shiftKey) {
+      e.preventDefault();
+      setClickedGeo(stateName);
+    } else {
     if (storedUser) {
       // Check if the clicked state is already in the user's locations array
       if (storedUser.locations.includes(stateName)) {
@@ -52,7 +59,7 @@ const Map = () => {
       console.error('User not found in local storage');
     }
   };
-
+  }
   // Sends user back to login page
   const handleLogout = () => { 
     navigate('/');
@@ -85,10 +92,10 @@ const Map = () => {
                 <Geography
                   key={geo.rsmKey}
                   geography={geo}
-                  onClick={() => { 
+                  onClick={(elements) => { 
                     console.log(geo.properties.name, 'clicked!'); 
                     setStates(geo.properties.name); 
-                    handleStateClick(geo.properties.name);
+                    handleStateClick(geo.properties.name, e);
                   }}
                   style={{
                     default: {
