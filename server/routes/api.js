@@ -8,5 +8,33 @@ const cookieController = require('../controllers/cookieController');
 const sessionController = require('../controllers/sessionController');
 
 const router = express.Router();
+router.use(cookieParser());
 
-router.get('/')
+router.get('/', cookieController.setCookie, (req, res) => {
+    return res.status(200).sendFile(path.resolve(__dirname, '../../src/components/Login.jsx' ))
+});
+
+router.get('/signup', (req, res) => {
+    return res.status(200).sendFile(path.resolve(__dirname, '../../src/components/Signup.jsx'))
+});
+
+//will add in below once they are built out: cookieController.setSSIDCookie, sessionController.startSession,  n
+router.post('/signup', userController.createUser, (req, res) => {
+    return res.status(200).json({ redirect: './map' })
+});
+
+//will add in below once they are built out: cookieController.setSSIDCookie, sessionController.startSession,
+router.post('/login', userController.verifyUser, (req, res) => {
+    return res.status(200).json({ redirect: './map' })
+});
+
+router.get('/map/api', apiController.getStateData, (req, res) => {
+    // return res.status(200).sendFile(path.resolve(__dirname, '../../src/components/Map.jsx'))
+    // return fetched data in response
+});
+
+router.get('/map', sessionController.isLoggedIn, (req, res) => {
+    return res.status(200).sendFile(path.resolve(__dirname, '../../src/components/Map.jsx'))
+});
+
+

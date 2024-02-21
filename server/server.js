@@ -3,13 +3,14 @@ const app = express();
 const path = require('path');
 const cookieParser = require('cookie-parser'); //if we add cookies 
 const mongoose = require("mongoose");
+const apiRouter = require('./routes/api.js');
 const PORT = 3000;
 
 //Allowing all IP Addresses via Atalas 
 const connectionString = 'mongodb+srv://solo:thisisdumb75@cluster0.6zuzqbm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';//will need mongoose connect function
 
 mongoose.connect(connectionString, {
-    useNewUrlParser: true,
+    useNewUrlParser: true, //heads up: terminal says useNewUrlParser and useUnifiedTopology are deprecated and have no effect
     useUnifiedTopology: true,
 }).then(() => {
     console.log('Connected to MongoDB');
@@ -25,9 +26,8 @@ app.use(express.urlencoded({ extended: true }));
 //static files
 app.use('/build', express.static(path.join(__dirname, '../build')));
 
-//not sure if we want to separate out server vs. router file so I will
-//leave this here for potential future use:
-// app.use('/', apiRouter);
+
+app.use('/', console.log('going to api file'), apiRouter);
 
 //this will route any get requests back to front-end so we can use react-router
 //going to wait until we rearrange their files before committing to a file path
@@ -50,5 +50,5 @@ app.use((err, req, res, next) => {
     return res.status(errorObj.status).json(errorObj.message);
 });
 
-
+ 
 // app.listen(PORT, () =>  console.log(`Server is running on port ${PORT}`));
