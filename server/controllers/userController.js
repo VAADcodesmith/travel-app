@@ -15,6 +15,15 @@ userController.createUser = async (req, res, next) => {
             status: 400,
             message: { err: 'Username and password are required.' },
         });
+    console.log('user: ', req.body.username, 'password: ', req.body.password)
+
+    //edge case: if user or pass not passed in
+    if (!username || !password)
+        return next({
+            log: 'Missing username or password in userController.createUser',
+            status: 400,
+            message: { err: 'Username and password are required.' },
+        });
 
     try {
         const user = await User.create({ username, password });

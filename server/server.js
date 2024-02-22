@@ -15,7 +15,7 @@ const cors = require('cors');
 const connectionString = 'mongodb+srv://solo:thisisdumb75@cluster0.6zuzqbm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';//will need mongoose connect function
 
 mongoose.connect(connectionString, {
-    useNewUrlParser: true, //heads up: terminal says useNewUrlParser and useUnifiedTopology are deprecated and have no effect
+    useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {
     console.log('Connected to MongoDB');
@@ -23,6 +23,9 @@ mongoose.connect(connectionString, {
     console.error('Connection error: ', error)
 });
 
+// app.use(session({
+//     secret: 'thisisacoolapp'
+// }))
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
