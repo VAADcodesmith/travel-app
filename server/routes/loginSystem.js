@@ -2,24 +2,13 @@ const express = require('express');
 const path = require('path');
 
 const userController = require('../controllers/userController');
-const apiController = require('../controllers/apiController');
+
 
 const router = express.Router();
 
-// router.use('*', (req, res) => {
-//     console.log('test pls')
-// })
-
-// router.use('/', apiController.getStateData, (req, res) => {
-//     const { stateName } = req.params;
-//     console.log(stateName)
-//     console.log(req.params)
-//     // return res.status(200).sendFile(path.resolve(__dirname, '../../src/components/Map.jsx'))
-//     // return fetched data in response
-//     return res.status(200).json({hello: 'test'})
-// });
 
 router.get('/', (req, res) => {
+    console.log('get request is a ok')
     return res.status(200).sendFile(path.resolve(__dirname, '../../src/components/Login.jsx' ))
 });
 
@@ -37,6 +26,7 @@ router.post('/login', userController.verifyUser, (req, res) => {
 });
 
 
+//will need to verify that they have an express session first
 router.get('/map', (req, res) => {
     return res.status(200).sendFile(path.resolve(__dirname, '../../src/components/Map.jsx'))
 });

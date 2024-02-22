@@ -1,9 +1,8 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const cookieParser = require('cookie-parser'); //if we add cookies 
 const mongoose = require("mongoose");
-const apiRouter = require('./routes/api.js');
+const userRouter = require('./routes/loginSystem.js');
 const fetchRouter = require('./routes/fetch.js')
 const MongoStore = require('connect-mongo'); //used to interface with express-session
 const PORT = 3000;
@@ -28,6 +27,7 @@ mongoose.connect(connectionString, {
 // define session here via express-session. cookie-parser no longer needed 
 app.use(session({
     secret: 'thisisacoolapp', //used to create hash to sign session ID cookie. required
+    resave: false, //set based off warning from terminal. set to true will save to server and can affect performance
     store: MongoStore.create({
         mongoUrl: connectionString,
         collection: 'mySessionCollection'}),//using connect-mongo as a session store instead of MemoryStore
@@ -45,14 +45,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/build', express.static(path.join(__dirname, '../build')));
 
 
-app.use('/map/api/:stateName', (req, res, next) => {
-    console.log('Request received for /map:', req.params);
-    const {stateName} = req.params;
-    req.stateName = stateName;
-    return next();
-}, fetchRouter);
+// app.use('/map/api/:stateName', (req, res, next) => {
+//     console.log('Request received for /map:', req.params);
+//     const {stateName} = req.params;
+//     req.stateName = stateName;
+//     return next();
+// }, fetchRouter);
 
-// app.use('/', console.log('going to api file'), apiRouter);
+//any requests will head to loginSystem first to see if it matches any of those requests
+app.use('/', userRouter);
 
 //this will route any get requests back to front-end so we can use react-router
 //going to wait until we rearrange their files before committing to a file path

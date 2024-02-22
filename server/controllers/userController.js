@@ -6,7 +6,7 @@ const userController = {};
 userController.createUser = async (req, res, next) => {
     //destructure user and pass first
     const { username, password, city } = req.body;
-    console.log('user: ', req.body.username, 'password: ', req.body.password)
+    // console.log('user: ', req.body.username, 'password: ', req.body.password)
 
     //edge case: if user or pass not passed in
     if (!username || !password || !city)
@@ -55,8 +55,8 @@ userController.verifyUser = async (req, res, next) => {
             res.redirect('/signup');
         } else {
             // testing
-            console.log('password: ', password);
-            console.log('user.password: ', user.password);
+            // console.log('password: ', password);
+            // console.log('user.password: ', user.password);
 
             //check that password matches in db
             const result = await bcrypt.compare(password, user.password);
