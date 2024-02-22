@@ -1,17 +1,13 @@
 const express = require('express');
 const path = require('path');
-//not sure if cookie parser needs to be in server or api or both so stay tuned
-const cookieParser = require('cookie-parser');
 
 const userController = require('../controllers/userController');
-const cookieController = require('../controllers/cookieController');
-const sessionController = require('../controllers/sessionController');
 const apiController = require('../controllers/apiController');
 
 const router = express.Router();
-router.use(cookieParser());
 
-router.get('/', cookieController.setCookie, (req, res) => {
+
+router.get('/', (req, res) => {
     return res.status(200).sendFile(path.resolve(__dirname, '../../src/components/Login.jsx' ))
 });
 
@@ -19,12 +15,11 @@ router.get('/signup', (req, res) => {
     return res.status(200).sendFile(path.resolve(__dirname, '../../src/components/Signup.jsx'))
 });
 
-//will add in below once they are built out: cookieController.setSSIDCookie, sessionController.startSession,  n
+
 router.post('/signup', userController.createUser, (req, res) => {
     return res.status(200).json({ redirect: './map' })
 });
 
-//will add in below once they are built out: cookieController.setSSIDCookie, sessionController.startSession,
 router.post('/login', userController.verifyUser, (req, res) => {
     return res.status(200).json({ redirect: './map' })
 });
@@ -38,7 +33,7 @@ router.get('/map/api/:stateName', apiController.getStateData, (req, res) => {
     return res.status(200).json({hello: 'test'})
 });
 
-router.get('/map', sessionController.isLoggedIn, (req, res) => {
+router.get('/map', (req, res) => {
     return res.status(200).sendFile(path.resolve(__dirname, '../../src/components/Map.jsx'))
 });
 

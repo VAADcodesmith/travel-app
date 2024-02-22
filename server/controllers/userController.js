@@ -67,7 +67,7 @@ userController.verifyUser = async (req, res, next) => {
             console.log('password: ', password);
             console.log('user.password: ', user.password);
 
-            //check that password is is what is 
+            //check that password matches in db
             const result = await bcrypt.compare(password, user.password);
 
             console.log('result: ', result)
