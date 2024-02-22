@@ -28,7 +28,7 @@ describe('db unit tests', () => {
     describe('#sync', () => {
         //user is added to database?
         it('write a valid user to the JSON file'), () => {
-            const user = [{ username: 'hi', password: 'test'}];
+            const user = [{ username: 'hi', password: 'test123'}];
             const result = db.sync(user);
             expect(result).not.toBeInstanceOf(Error);
             const userList = JSON.parse(fs.readFileSync(testJsonFile));

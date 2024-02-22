@@ -5,11 +5,11 @@ const userController = {};
 
 userController.createUser = async (req, res, next) => {
     //destructure user and pass first
-    const { username, password } = req.body;
+    const { username, password, city } = req.body;
     console.log('user: ', req.body.username, 'password: ', req.body.password)
 
     //edge case: if user or pass not passed in
-    if (!username || !password)
+    if (!username || !password || !city)
         return next({
             log: 'Missing username or password in userController.createUser',
             status: 400,
@@ -17,7 +17,7 @@ userController.createUser = async (req, res, next) => {
         });
 
     try {
-        const user = await User.create({ username, password });
+        const user = await User.create({ username, password, city });
         res.locals.username = user.username
        // res.status(200).json({ message: 'successful signup' });//sent it back in server.js instead of here, not sure it makes a diff
         return next();
@@ -58,7 +58,7 @@ userController.verifyUser = async (req, res, next) => {
             console.log('password: ', password);
             console.log('user.password: ', user.password);
 
-            //check that password is is what is 
+            //check that password matches in db
             const result = await bcrypt.compare(password, user.password);
 
             console.log('result: ', result)
