@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const userController = require('../controllers/userController');
 const cookieController = require('../controllers/cookieController');
 const sessionController = require('../controllers/sessionController');
+const apiController = require('../controllers/apiController');
 
 const router = express.Router();
 router.use(cookieParser());
@@ -28,9 +29,13 @@ router.post('/login', userController.verifyUser, (req, res) => {
     return res.status(200).json({ redirect: './map' })
 });
 
-router.get('/map/api', apiController.getStateData, (req, res) => {
+router.get('/map/api/:stateName', apiController.getStateData, (req, res) => {
+    const { stateName } = req.params;
+    console.log(stateName)
+    console.log(req.params)
     // return res.status(200).sendFile(path.resolve(__dirname, '../../src/components/Map.jsx'))
     // return fetched data in response
+    return res.status(200).json({hello: 'test'})
 });
 
 router.get('/map', sessionController.isLoggedIn, (req, res) => {

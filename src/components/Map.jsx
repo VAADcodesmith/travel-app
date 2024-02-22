@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios"
 import { geoCentroid } from "d3-geo";
 import { useNavigate } from "react-router-dom";
+// Chakra UI imports
 import {
   Button,
   Popover,
@@ -12,7 +13,7 @@ import {
   PopoverHeader,
   PopoverBody,
 } from "@chakra-ui/react";
-
+// React Simple Maps imports
 import {
   ComposableMap, //map container
   Geographies, //json of all countries
@@ -47,50 +48,54 @@ const Map = () => {
   const [addStateData, setAddStateData] =
 useState({});  const navigate = useNavigate();
 
-  const handleStateClick = (stateName, e) => {
 
-    // Make request to the server
+  // Function to handle clicks; The name of the state that was clicked as well as the click event are passed in.  cconst handleStateClick = (stateName, e) => {
+    // Make request to server.js
     const fetchAddStateData = async () => {
-      try {
-        const response = await axios.get(`/map/api/${stateName}`)
-      }
-      catch (error) {
-        console.log('error fetching data');
-      }
-    }
-    // Retrieve user information from local storage
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-
-    if (e.shiftKey) {
-      e.preventDefault();
-      console.log("shift click working");
-      setClickedGeo(stateName);
-
-      fetchAddStateData(stateName)
-      setDisplayPopover(true);
-      setPopoverPosition({ x: e.clientX, y: e.clientY });
-      }    } else {
-      if (storedUser) {
-        // Check if the clicked state is already in the user's locations array
-        if (storedUser.locations.includes(stateName)) {
-          // Remove the clicked state from the user's locations array
-          storedUser.locations = storedUser.locations.filter(
-            (state) => state !== stateName
-          );
-          console.log("State removed from user's locations array");
-        } else {
-          // Add the clicked state to the user's locations array
-          storedUser.locations.push(stateName);
+        try {
+            // Make the specific request to server.js -> apiRouter
+            const response = await axios.get(`/map/api/${stateName.toLowerCase()}`);
+            // Update addStateData (additional state data) state with fetched data from API
+            setAddStateData(response.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
+    };
 
-        // Store the updated user information back in local storage
-        localStorage.setItem("user", JSON.stringify(storedUser));
-      } else {
-        console.error("User not found in local storage");
-      }
+    // Retrieve user information from local storage
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+
+    // If the click event that occurred happened while 'shift' is held down
+    if (e.shiftKey) {
+        e.preventDefault();
+        console.log('shift click working');
+        // Update state with the name of the state that was clicked (i.e. Utah)
+        setClickedGeo(stateName);
+        // Run the 'fetchAddStateData' function to make the GET request to server.js
+        fetchAddStateData();
+        // Update DisplayPopover state to let the Popover component (Chakra UI) below know to render
+        setDisplayPopover(true);
+        // Update the PopoverPosition state to let the Popover component know where on the page to render (still have to update this to reflect the position of the state that was clicked on)
+        setPopoverPosition({ x: e.clientX, y: e.clientY });
+    } else {
+        if (storedUser) {
+            // Check if the clicked state is already in the user's locations array
+            if (storedUser.locations.includes(stateName)) {
+                // Remove the clicked state from the user's locations array
+                storedUser.locations = storedUser.locations.filter((state) => state !== stateName);
+                console.log("State removed from user's locations array");
+            } else {
+                // Add the clicked state to the user's locations array
+                storedUser.locations.push(stateName);
+            }
+
+            // Store the updated user information back in local storage
+            localStorage.setItem('user', JSON.stringify(storedUser));
+        } else {
+            console.error('User not found in local storage');
+        }
     }
-  };
-  // Sends user back to login page
+    // Sends user back to login page
   const handleLogout = () => {
     navigate("/");
   };
@@ -141,37 +146,6 @@ useState({});  const navigate = useNavigate();
                         pressed: { fill: "#65A5B8", outline: "#65A5B8" },
                       }}
                     />
-                    <div
-                      style={{
-                        position: "relative",
-                        width: "100%",
-                        height: "100%",
-                      }}
-                    >
-                      {clickedGeo && (
-                        <Popover
-                          key={geo.rsmKey + "popover"}
-                          isOpen={true}
-                          onClose={() => setClickedGeo(null)}
-                        >
-                          <PopoverTrigger type="click">
-                            <Button
-                              style={{ position: "absolute", zIndex: 9999 }}
-                            >
-                              TRIGGER
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                            <PopoverHeader>Confirmation!</PopoverHeader>
-                            <PopoverBody>
-                              Are you sure you want to have that milkshake?
-                            </PopoverBody>
-                          </PopoverContent>
-                        </Popover>
-                      )}
-                    </div>
                   </React.Fragment>
                 ))}
                 {/* this second geographies.map adds the labels to the state elements. States either get a marker(aka label) or an annotation */}

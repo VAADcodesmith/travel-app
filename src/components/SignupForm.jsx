@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Stack,
   FormControl,
@@ -45,7 +46,6 @@ const fetchAutofillSuggestions = async () => {
     setSuggestions([]);
   }
 };
-
   
     fetchAutofillSuggestions();
   }, [city]);
@@ -81,7 +81,7 @@ const fetchAutofillSuggestions = async () => {
             </InputRightElement>
           </InputGroup>
         </FormControl>
-        <FormControl position="relative">
+        <FormControl>
           <InputGroup>
             <InputLeftElement pointerEvents="none" children="City" />
             <Input type="text" placeholder="Enter city" value={city} onChange={(e) => setCity(e.target.value)} />
@@ -89,15 +89,16 @@ const fetchAutofillSuggestions = async () => {
           {suggestions.length > 0 && (
             <Box position="absolute" mt="1" w="full" zIndex="2" bg="white" boxShadow="lg">
               {suggestions.map((suggestion) => (
-                <Box key={suggestion.postalCode} p="2" borderBottomWidth="1px" onClick={() => { setCity(suggestion.placeName); setSuggestions([]); }}>
+                <Box key={suggestion.postalCode} p="2" borderBottomWidth="1px" _hover={{ bg:'cityOption.bg' }} onClick={() => { setCity(suggestion.placeName); setSuggestions([]); }}>
                   {suggestion.placeName}, {suggestion.adminCode1}
                 </Box>
               ))}
             </Box>
           )}
         </FormControl>
-        {errorMessage && <FormHelperText color="red.500">{errorMessage}</FormHelperText>}
-        <Button borderRadius="9px" type="submit" variant="solid" colorScheme="teal" width="full">Sign Up</Button>
+        <FormControl>
+          <Button borderRadius="9px" type="submit" variant="solid" colorScheme="teal" width="full">Sign Up</Button>
+        </FormControl>
       </Stack>
     </form>
   );
