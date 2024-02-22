@@ -21,7 +21,8 @@ module.exports = {
         compress: true,
         historyApiFallback: true,
         proxy: {
-            context: ['/signup', '/map',], //you could also do '/**' but this will lead to serving static assets 
+            context: ['/**'],
+            // context: ['/signup', '/map',], //you could also do '/**' but this will lead to serving static assets 
             target: 'http://localhost:3000/',
             secure: false,
           },

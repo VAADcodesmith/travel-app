@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios"
-import { geoCentroid } from "d3-geo";
+import { geoCentroid, geoAlbersUsa } from "d3-geo";
 import { useNavigate } from "react-router-dom";
 // Chakra UI imports
 import {
@@ -23,6 +23,7 @@ import {
 } from "react-simple-maps";
 
 import allStates from "../allstates.json";
+import stateInfo from "../stateInfo.json";
 
 const geoURL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
@@ -45,18 +46,36 @@ const Map = () => {
   const [clickedGeo, setClickedGeo] = useState(null);
   const [displayPopover, setDisplayPopover] = useState(null);
   const [popoverPosition, setPopoverPosition] = useState({ x: 0, y: 300 });
-  const [addStateData, setAddStateData] =
-useState({});  const navigate = useNavigate();
+  const [addStateData, setAddStateData] = useState({});  
+  const [labelPositions, setLabelPositions] = useState([]);
+  const navigate = useNavigate();
 
 
-  // Function to handle clicks; The name of the state that was clicked as well as the click event are passed in.  cconst handleStateClick = (stateName, e) => {
+  // Function to convert longitude and latitude coordinates to pixel coordinates
+  const getPixelPosition = (longitude, latitude) => {
+  // Define the projection
+  const projection = geoAlbersUsa()
+      .scale(1900) // You may need to adjust the scale based on your map dimensions
+      .translate([825, 550]); // You may need to adjust the translation based on your map dimensions
+
+  // Convert longitude and latitude to pixel coordinates
+  const [x, y] = projection([longitude, latitude]);
+
+  // Return an array with pixel coordinates [x, y]
+  return [x, y];
+};
+
+
+  // Function to handle clicks; The name of the state that was clicked as well as the click event are passed in.  c
+  const handleStateClick = (stateName, id, e) => {
     // Make request to server.js
     const fetchAddStateData = async () => {
         try {
-            // Make the specific request to server.js -> apiRouter
-            const response = await axios.get(`/map/api/${stateName.toLowerCase()}`);
-            // Update addStateData (additional state data) state with fetched data from API
-            setAddStateData(response.data);
+          const stateData = stateInfo.find(state => state.name.toLowerCase() === stateName.toLowerCase());
+        
+          // Update addStateData state with the found state data
+          setAddStateData(stateData);
+          console.log(addStateData)
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -71,12 +90,26 @@ useState({});  const navigate = useNavigate();
         console.log('shift click working');
         // Update state with the name of the state that was clicked (i.e. Utah)
         setClickedGeo(stateName);
-        // Run the 'fetchAddStateData' function to make the GET request to server.js
+
+        console.log(labelPositionsArray)
+        console.log(id)
+        // Find the corresponding coordinates from labelPositionsArray
+        const clickedStateCoordinates = labelPositionsArray.find(position => position.state === id)?.coordinates;
+        console.log(clickedStateCoordinates)
+        // Check if coordinates are found
+        if (clickedStateCoordinates) {
+        // Update the PopoverPosition state with the coordinates of the clicked state
+        const pixelPosition = getPixelPosition(clickedStateCoordinates[0], clickedStateCoordinates[1]);
+        console.log(pixelPosition)
+        setPopoverPosition({ x: pixelPosition[0], y: pixelPosition[1] });
+        }
+        
+        // Run the 'fetchAddStateData' function to get additional state info from stateInfo.js.
         fetchAddStateData();
         // Update DisplayPopover state to let the Popover component (Chakra UI) below know to render
         setDisplayPopover(true);
         // Update the PopoverPosition state to let the Popover component know where on the page to render (still have to update this to reflect the position of the state that was clicked on)
-        setPopoverPosition({ x: e.clientX, y: e.clientY });
+        // setPopoverPosition({ x: e.clientX, y: e.clientY });
     } else {
         if (storedUser) {
             // Check if the clicked state is already in the user's locations array
@@ -95,10 +128,13 @@ useState({});  const navigate = useNavigate();
             console.error('User not found in local storage');
         }
     }
+  }
     // Sends user back to login page
   const handleLogout = () => {
     navigate("/");
   };
+
+  const labelPositionsArray = [];
 
   return (
     <div
@@ -131,7 +167,7 @@ useState({});  const navigate = useNavigate();
                       onClick={(e) => {
                         console.log(geo.properties.name, "clicked!");
                         setStates(geo.properties.name);
-                        handleStateClick(geo.properties.name, e);
+                        handleStateClick(geo.properties.name, geo.id, e);
                       }}
                       style={{
                         default: {
@@ -149,9 +185,19 @@ useState({});  const navigate = useNavigate();
                   </React.Fragment>
                 ))}
                 {/* this second geographies.map adds the labels to the state elements. States either get a marker(aka label) or an annotation */}
+                
                 {geographies.map((geo) => {
                   const centroid = geoCentroid(geo);
                   const cur = allStates.find((s) => s.val === geo.id);
+                  // Adding coordinates of labels to labelPositions array in state
+                  if (cur && centroid) {
+                    // Add the coordinates to the labelPositionsArray
+                    labelPositionsArray.push({
+                        state: geo.id,
+                        coordinates: centroid,
+                    });
+                    // console.log(labelPositionsArray)
+                  }
                   return (
                     <g key={geo.rsmKey + "-name"}>
                       {cur &&
@@ -189,23 +235,24 @@ useState({});  const navigate = useNavigate();
         {/* Render popover if a geography is shift-clicked */}
         {displayPopover && (
           <Popover
+            key={`${popoverPosition.x}-${popoverPosition.y}`}
             isOpen={true}
             onClose={() => setDisplayPopover(null)}
-            position="absolute"
-            left={popoverPosition.x}
-            top={popoverPosition.y}
+            // placement="top-start"
           >
             <PopoverTrigger>
-              <Button>TRIGGER</Button>
+              <Button
+                style={{  opacity: 0, position: 'absolute', top: popoverPosition.y, left: popoverPosition.x }}
+              ></Button>
             </PopoverTrigger>
             <PopoverContent>
               <PopoverArrow />
               <PopoverCloseButton />
               <PopoverHeader><b>{clickedGeo}</b></PopoverHeader>
               <PopoverBody>
-                <div>Population:</div>
-                <div>Area:</div>
-                <div>Photos:</div>
+                <div>Capital: {addStateData.capital.name}</div>
+                <div>Population: {addStateData.population.total}</div>
+                {/* <div>Photos:</div> */}
               </PopoverBody>
             </PopoverContent>
           </Popover>

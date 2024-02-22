@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser'); //if we add cookies 
 const mongoose = require("mongoose");
 const apiRouter = require('./routes/api.js');
+const fetchRouter = require('./routes/fetch.js')
 const MongoStore = require('connect-mongo'); //used to interface with express-session
 const PORT = 3000;
 const session = require('express-session');
@@ -43,12 +44,15 @@ app.use(express.urlencoded({ extended: true }));
 //static files
 app.use('/build', express.static(path.join(__dirname, '../build')));
 
-app.use('/map/api', (req, res, next) => {
-    console.log('Request received for /map:', req.method, req.url);
-    next();
-}, apiRouter);
 
-app.use('/', console.log('going to api file'), apiRouter);
+app.use('/map/api/:stateName', (req, res, next) => {
+    console.log('Request received for /map:', req.params);
+    const {stateName} = req.params;
+    req.stateName = stateName;
+    return next();
+}, fetchRouter);
+
+// app.use('/', console.log('going to api file'), apiRouter);
 
 //this will route any get requests back to front-end so we can use react-router
 //going to wait until we rearrange their files before committing to a file path
@@ -61,7 +65,7 @@ app.post('/signup', userController.createUser, (req, res) => {
 })
 
 //catch all error handler
-app.use((req, res) => res.status(404).send('This page does not exist'));
+app.use('*', (req, res) => res.status(404).send('This page does not exist'));
 
 //global error handler
 app.use((err, req, res, next) => {
