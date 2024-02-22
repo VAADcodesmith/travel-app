@@ -1,8 +1,8 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Login from './Login.jsx';
-import Signup from './Signup.jsx';
-import Map from './Map.jsx';
+import Login from './components/Login.jsx';
+import Signup from './components/Signup.jsx';
+import Map from './components/Map.jsx';
 import theme from '../styles/theme.js'
 import { ChakraProvider } from '@chakra-ui/react';
 
