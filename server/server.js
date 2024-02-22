@@ -3,10 +3,7 @@ const app = express();
 const path = require('path');
 const cookieParser = require('cookie-parser'); //if we add cookies 
 const mongoose = require("mongoose");
-<<<<<<< HEAD
-=======
 const apiRouter = require('./routes/api.js');
->>>>>>> 5e545d546c311c1be0d7b6bb7153048d84ef200b
 const PORT = 3000;
 const session = require('express-session');
 const userController = require ('./controllers/userController.js')
@@ -18,11 +15,7 @@ const cors = require('cors');
 const connectionString = 'mongodb+srv://solo:thisisdumb75@cluster0.6zuzqbm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';//will need mongoose connect function
 
 mongoose.connect(connectionString, {
-<<<<<<< HEAD
-    useNewUrlParser: true,
-=======
     useNewUrlParser: true, //heads up: terminal says useNewUrlParser and useUnifiedTopology are deprecated and have no effect
->>>>>>> 5e545d546c311c1be0d7b6bb7153048d84ef200b
     useUnifiedTopology: true,
 }).then(() => {
     console.log('Connected to MongoDB');
@@ -30,12 +23,6 @@ mongoose.connect(connectionString, {
     console.error('Connection error: ', error)
 });
 
-<<<<<<< HEAD
-// app.use(session({
-//     secret: 'thisisacoolapp'
-// }))
-=======
->>>>>>> 5e545d546c311c1be0d7b6bb7153048d84ef200b
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
