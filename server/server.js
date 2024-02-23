@@ -11,7 +11,7 @@ const cors = require('cors');
 
 
 
-//Allowing all IP Addresses via Atalas, need to change settings in Atlas for this to happen
+//Allowing all IP Addresses via Atlas, need to change settings in Atlas for this to happen
 const connectionString = 'mongodb+srv://solo:thisisdumb75@cluster0.6zuzqbm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';//will need mongoose connect function
 
 mongoose.connect(connectionString, {
@@ -27,15 +27,16 @@ mongoose.connect(connectionString, {
 app.use(session({
     secret: 'thisisacoolapp', //used to create hash to sign session ID cookie. required
     resave: false, //set based off warning from terminal. set to true will save to server and can affect performance
+    saveUninitialized: false,
     store: MongoStore.create({
         mongoUrl: connectionString,
         collection: 'mySessionCollection'}),//using connect-mongo as a session store instead of MemoryStore
     cookie:{
-        expires: 60000,
+        maxAge: 6000,
         sameSite: 'strict', //same site enforcement, not sure if we need it
     }
 }));
-app.use(cors());app.use(cors());
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -56,6 +57,7 @@ app.get('*', (req, res) => {
 app.post('/signup', userController.createUser, (req, res) => {
     return res.status(200).json({user: res.locals.newUser});
 })
+
 
 // Logout route
 app.post('/logout', (req, res) => {
